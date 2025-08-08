@@ -1,11 +1,25 @@
-import React from 'react'
+import React from "react";
+import { useAuthStore } from "./store/auth";
+import Layout from "./components/layout/Layout";
+import LoginPage from "./pages/auth/LoginPage";
+import { PageProvider } from "./store/page";
+import ControlPage from "./components/ControlPage";
+import { seedIfEmpty } from "./services/seed";
 
-type Props = {}
+seedIfEmpty();
 
-const App = (props: Props) => {
+export default function App() {
+  const isAuth = useAuthStore((s) => s.isAuthenticated);
+
   return (
-    <div className='text-8xl text-black'>Hello isso lolololol ahahahaha</div>
-  )
+    <PageProvider initialPage={{ name: isAuth ? "dashboard" : "login" }}>
+      {isAuth ? (
+        <Layout>
+          <ControlPage />
+        </Layout>
+      ) : (
+        <LoginPage />
+      )}
+    </PageProvider>
+  );
 }
-
-export default App;
