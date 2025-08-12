@@ -1,4 +1,5 @@
 .env
+ca.pem
 
 HELP.md
 target/

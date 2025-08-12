@@ -8,7 +8,7 @@ echo    Iniciando o Spring Boot...
 echo ===================================================
 echo.
 
-mvn spring-boot:run
+.\mvnw spring-boot:run
 
 echo.
 echo ===================================================
