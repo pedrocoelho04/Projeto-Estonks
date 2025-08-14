@@ -6,8 +6,6 @@ import java.io.FileReader;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import com.estonks.projeto.Database.DatabaseConnection;
-
 @Controller
 public class PageControler {
   @GetMapping("/")
@@ -20,9 +18,4 @@ public class PageControler {
   //   return leitor.read();
   // }
 
-  @GetMapping("/test")
-  public void test(){
-    DatabaseConnection data = new DatabaseConnection();
-    data.connect();
-  }
 }
