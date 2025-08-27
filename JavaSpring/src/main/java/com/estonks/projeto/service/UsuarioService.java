@@ -18,19 +18,19 @@ public class UsuarioService {
         this.usuariosRepository = usuariosRepository;
     }
 
-    public Usuario salvarProduto(Usuario usuario) {
+    public Usuario salvarUsuario(Usuario usuario) {
         return usuariosRepository.save(usuario);
     }
 
-    public List<Usuario> listarTodosProdutos() {
+    public List<Usuario> listarTodosUsuarios() {
         return usuariosRepository.findAll();
     }
 
-    public Optional<Usuario> buscarProdutoPorId(Long id) {
+    public Optional<Usuario> buscarUsuarioPorId(Long id) {
         return usuariosRepository.findById(id);
     }
 
-    public void deletarProduto(Long id) {
+    public void deletarUsuario(Long id) {
         usuariosRepository.deleteById(id);
     }
   
