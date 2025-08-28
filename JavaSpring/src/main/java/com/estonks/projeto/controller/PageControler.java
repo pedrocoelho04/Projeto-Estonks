@@ -12,10 +12,4 @@ public class PageControler {
   public String index() {
     return "./index.html";
   }
-  //   @GetMapping("/test")
-  // public String test() {
-  //   BufferedReader leitor = new BufferedReader(new FileReader("../../../../../resources/static/index.html"));
-  //   return leitor.read();
-  // }
-
 }

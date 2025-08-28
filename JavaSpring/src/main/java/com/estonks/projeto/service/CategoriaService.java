@@ -11,26 +11,26 @@ import com.estonks.projeto.schemas.Categoria;
 
 @Service
 public class CategoriaService {
-    private final CategoriaRepository categoriaRepository;
+  private final CategoriaRepository categoriaRepository;
 
-    @Autowired
-    public CategoriaService(CategoriaRepository categoriaRepository) {
-        this.categoriaRepository = categoriaRepository;
-    }
+  @Autowired
+  public CategoriaService(CategoriaRepository categoriaRepository) {
+    this.categoriaRepository = categoriaRepository;
+  }
 
-    public Categoria salvarCategoria(Categoria categoria) {
-        return categoriaRepository.save(categoria);
-    }
+  public Categoria salvarCategoria(Categoria categoria) {
+    return categoriaRepository.save(categoria);
+  }
 
-    public List<Categoria> listarTodosCategorias() {
-        return categoriaRepository.findAll();
-    }
+  public List<Categoria> listarTodosCategorias() {
+    return categoriaRepository.findAll();
+  }
 
-    public Optional<Categoria> buscarCategoriaPorId(Long id) {
-        return categoriaRepository.findById(id);
-    }
+  public Optional<Categoria> buscarCategoriaPorId(Long id) {
+    return categoriaRepository.findById(id);
+  }
 
-    public void deletarCategoria(Long id) {
-        categoriaRepository.deleteById(id);
-    }
+  public void deletarCategoria(Long id) {
+    categoriaRepository.deleteById(id);
+  }
 }

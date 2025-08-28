@@ -24,6 +24,12 @@ public class Usuario {
   @OneToMany(mappedBy = "usuario_Modificou_id", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
   private List<Produto> produtosAlterados = new ArrayList<>();
 
+  public Usuario(Integer id, String nome, String senha) {
+    this.id = id;
+    this.nome = nome;
+    this.senha = senha;
+  }
+
   public Usuario(Integer id, String nome, String senha, List<Produto> produtosCriados,
       List<Produto> produtosAlterados) {
     this.id = id;
