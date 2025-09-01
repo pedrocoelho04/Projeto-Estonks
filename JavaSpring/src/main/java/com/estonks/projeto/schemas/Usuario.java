@@ -10,13 +10,16 @@ import javax.persistence.*;
 public class Usuario {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  Integer id;
+  private Integer id;
 
   @Column(name = "nome", length = 255, nullable = false)
-  String nome;
+  private String nome;
 
   @Column(name = "senha", length = 255, nullable = false)
-  String senha;
+  private String senha;
+
+  @Column(name = "permissao", length = 255, nullable = true)
+  private String permissao;
 
   @OneToMany(mappedBy = "usuario_Criou_Id", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
   private List<Produto> produtosCriados = new ArrayList<>();
