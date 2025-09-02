@@ -71,7 +71,7 @@ public class UsuarioService {
    * @param senha a senha do usuario do qual será consultado.
    * @return se o usuario está na base conforme informado.
    */
-    public Boolean buscarLoginUsuario(String usuario, String senha) {
+    public Optional<Usuario> buscarLoginUsuario(String usuario, String senha) {
         return usuariosRepository.findByNomeAndSenha(usuario, senha);
     }
 

@@ -10,5 +10,5 @@ import com.estonks.projeto.schemas.Usuario;
 
 @Repository
 public interface UsuariosRepository extends JpaRepository <Usuario, Long>{
-  Boolean findByNomeAndSenha(String nome, String senha);
+  Optional<Usuario> findByNomeAndSenha(String nome, String senha);
 }
