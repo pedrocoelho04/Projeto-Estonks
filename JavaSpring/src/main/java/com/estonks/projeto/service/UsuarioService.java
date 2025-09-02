@@ -61,6 +61,20 @@ public class UsuarioService {
         return usuariosRepository.findById(id);
     }
 
+  /**
+   * Busca um nome e senha de um usuario.
+   * <p>
+   * Este metodo realizar a busca do usuario pelo seu nome e senha
+   * para retorna-los
+   * </p>
+   * @param usuario o nome do usuario do qual será consultado.
+   * @param senha a senha do usuario do qual será consultado.
+   * @return se o usuario está na base conforme informado.
+   */
+    public Boolean buscarLoginUsuario(String usuario, String senha) {
+        return usuariosRepository.findByNomeAndSenha(usuario, senha);
+    }
+
     /**
    * Deleta um usuario existente.
    * <p>
