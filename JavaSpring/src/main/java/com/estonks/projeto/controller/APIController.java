@@ -1,32 +1,32 @@
 package com.estonks.projeto.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import com.estonks.projeto.repository.UsuariosRepository;
-import com.estonks.projeto.response.CheckList;
-import com.estonks.projeto.schemas.Usuario;
+import com.estonks.projeto.request.LoginReq;
+import com.estonks.projeto.response.LoginRes;
 import com.estonks.projeto.service.UsuarioService;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 @RestController
 public class APIController {
-  @GetMapping("/api/check")
-  public String check() {
-    return HttpStatus.OK.toString();
+  private final UsuarioService userDB;
+
+  @Autowired
+  public APIController(UsuarioService userDB) {
+    this.userDB = userDB;
   }
 
-  @PostMapping("/api/test")
-  public String postIntenst(@RequestBody String requestBody, HttpServletResponse response) {
-    StringBuilder strb= new StringBuilder();
-    strb.append(HttpStatus.OK);
-    strb.append(", " +requestBody);
-    return strb.toString();
+  @PostMapping("/api/login")
+  public ResponseEntity<LoginRes> login(@RequestBody LoginReq requestBody) {
+    String user = requestBody.getUser();
+    String password = requestBody.getPassword();
+
+    if (user == null || password == null || user.isEmpty() || password.isEmpty()) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new LoginRes("Falha ao validar, houve dados pendentes.", HttpStatus.BAD_REQUEST.value()));
+
+    if (!userDB.buscarLoginUsuario(user, password).isEmpty()) return ResponseEntity.status(HttpStatus.OK).body(new LoginRes("Login de usuário aprovado", HttpStatus.OK.value()));
+
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new LoginRes("Login incorreto.", HttpStatus.UNAUTHORIZED.value()));
   }
 
 }

@@ -1,4 +1,4 @@
-package com.estonks.projeto.controller.api;
+package com.estonks.projeto.controller.api.routes;
 
 import com.estonks.projeto.schemas.Usuario;
 import com.estonks.projeto.service.UsuarioService;

@@ -1,8 +1,5 @@
 package com.estonks.projeto.controller;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
