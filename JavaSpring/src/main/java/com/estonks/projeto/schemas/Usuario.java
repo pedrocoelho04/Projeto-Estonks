@@ -21,23 +21,29 @@ public class Usuario {
   @Column(name = "permissao", length = 255, nullable = true)
   private String permissao;
 
+  @Column(name = "token", length = 36, nullable = true)
+  private String token;
+
   @OneToMany(mappedBy = "usuario_Criou_Id", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
   private List<Produto> produtosCriados = new ArrayList<>();
 
   @OneToMany(mappedBy = "usuario_Modificou_id", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
   private List<Produto> produtosAlterados = new ArrayList<>();
 
-  public Usuario(Integer id, String nome, String senha) {
+  public Usuario(Integer id, String nome, String senha, String permissao, String token) {
     this.id = id;
     this.nome = nome;
     this.senha = senha;
+    this.permissao = permissao;
+    this.token = token;
   }
 
-  public Usuario(Integer id, String nome, String senha, List<Produto> produtosCriados,
-      List<Produto> produtosAlterados) {
+  public Usuario(Integer id, String nome, String senha, String permissao, List<Produto> produtosCriados, List<Produto> produtosAlterados, String token) {
     this.id = id;
     this.nome = nome;
     this.senha = senha;
+    this.permissao = permissao;
+    this.token = token;
     this.produtosCriados = produtosCriados;
     this.produtosAlterados = produtosAlterados;
   }
@@ -83,5 +89,21 @@ public class Usuario {
 
   public void setProdutosAlterados(List<Produto> produtosAlterados) {
     this.produtosAlterados = produtosAlterados;
+  }
+
+  public String getPermissao() {
+    return permissao;
+  }
+
+  public void setPermissao(String permissao) {
+    this.permissao = permissao;
+  }
+
+  public String getToken() {
+    return token;
+  }
+
+  public void setToken(String token) {
+    this.token = token;
   }
 }
