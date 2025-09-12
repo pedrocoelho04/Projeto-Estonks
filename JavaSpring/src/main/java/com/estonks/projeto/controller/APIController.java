@@ -8,6 +8,8 @@ import com.estonks.projeto.request.LoginReq;
 import com.estonks.projeto.response.LoginRes;
 import com.estonks.projeto.service.UsuarioService;
 
+import java.util.UUID;
+
 @RestController
 public class APIController {
   private final UsuarioService userDB;
@@ -24,7 +26,9 @@ public class APIController {
 
     if (user == null || password == null || user.isEmpty() || password.isEmpty()) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new LoginRes("Falha ao validar, houve dados pendentes.", HttpStatus.BAD_REQUEST.value()));
 
-    if (!userDB.buscarLoginUsuario(user, password).isEmpty()) return ResponseEntity.status(HttpStatus.OK).body(new LoginRes("Login de usuário aprovado", HttpStatus.OK.value()));
+    String token = UUID.randomUUID().toString();
+
+    if (!userDB.buscarLoginUsuario(user, password).isEmpty()) return ResponseEntity.status(HttpStatus.OK).body(new LoginRes("Login de usuário aprovado", HttpStatus.OK.value(), token));
 
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new LoginRes("Login incorreto.", HttpStatus.UNAUTHORIZED.value()));
   }
