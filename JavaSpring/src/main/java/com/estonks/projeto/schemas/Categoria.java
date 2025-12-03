@@ -10,15 +10,16 @@ import javax.persistence.*;
 public class Categoria {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Integer id;
+  private Long id;
 
   @Column(name = "nome", length = 100, nullable = false)
   private String nome;
 
+  @com.fasterxml.jackson.annotation.JsonIgnore
   @ManyToMany(mappedBy = "categorias")
   private Set<Produto> produtos = new HashSet<>();
 
-  public Categoria(Integer id, String nome, Set<Produto> produtos) {
+  public Categoria(Long id, String nome, Set<Produto> produtos) {
     this.id = id;
     this.nome = nome;
     this.produtos = produtos;
@@ -27,11 +28,11 @@ public class Categoria {
   public Categoria() {
   }
 
-  public Integer getId() {
+  public Long getId() {
     return id;
   }
 
-  public void setId(Integer id) {
+  public void setId(Long id) {
     this.id = id;
   }
 

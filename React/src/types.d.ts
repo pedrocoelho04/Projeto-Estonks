@@ -1,36 +1,31 @@
-// Tipos alinhados ao seu SQL
+// Tipos alinhados ao seu SQL (agora em camelCase para o Spring Boot)
 
 export type Id = number;
 
 export interface Usuario {
-  Id: Id;
-  Nome: string;
-  Senha: string; // Em produção, use hash (ex.: bcrypt) antes de salvar
+  id: Id;
+  nome: string;
+  senha?: string; // Opcional no frontend ao listar
 }
 
 export interface Categoria {
-  Id: Id;
-  Nome: string;
+  id: Id;
+  nome: string;
 }
 
 export interface Produto {
-  Id: Id;
-  Nome: string;
-  Digital: boolean;
-  Altura?: number | null; // NUMERIC(10,2)
-  Largura?: number | null;
-  Peso?: number | null; // NUMERIC(10,3)
-  Quantidade: number;
-  Valor_Unitario: number; // NUMERIC(10,2)
-  Comprimento?: number | null;
-  Data_Criacao: string; // ISO string
-  Data_Modificacao?: string | null;
-  Usuario_Criou_Id?: Id | null;
-  Usuario_Modificou_Id?: Id | null;
-}
-
-export interface CatXprod {
-  Id: Id;
-  Id_Produto: Id;
-  Id_Categoria: Id;
+  id: Id;
+  nome: string;
+  digital: boolean;
+  altura?: number | null;
+  largura?: number | null;
+  peso?: number | null;
+  quantidade: number;
+  valor_Unitario: number;
+  comprimento?: number | null;
+  data_criacao?: string;
+  data_modificacao?: string | null;
+  usuario_Criou_Id?: Usuario | null;
+  usuario_Modificou_id?: Usuario | null;
+  categorias?: Categoria[];
 }

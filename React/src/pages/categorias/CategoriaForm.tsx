@@ -17,7 +17,7 @@ export default function CategoriaForm(props: Props) {
     (async () => {
       if (isEdit && id != null) {
         const cat = await getCategoriaById(id);
-        if (cat) setNome(cat.Nome);
+        if (cat) setNome(cat.nome);
       }
     })();
   }, [isEdit, id]);
@@ -28,8 +28,8 @@ export default function CategoriaForm(props: Props) {
       alert("Nome é obrigatório");
       return;
     }
-    if (!isEdit) await createCategoria({ Nome: nome.trim() });
-    else if (id != null) await updateCategoria(id, { Nome: nome.trim() });
+    if (!isEdit) await createCategoria({ nome: nome.trim() });
+    else if (id != null) await updateCategoria(id, { nome: nome.trim() });
     setPage({ name: "categorias" });
   }
 

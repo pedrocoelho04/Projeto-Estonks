@@ -10,22 +10,22 @@ type Props =
   | { mode: "edit"; id: number };
 
 type FormState = {
-  Nome: string;
-  Digital: boolean;
-  Altura?: number | null;
-  Largura?: number | null;
-  Comprimento?: number | null;
-  Peso?: number | null;
-  Quantidade: number;
-  Valor_Unitario: number;
+  nome: string;
+  digital: boolean;
+  altura?: number | null;
+  largura?: number | null;
+  comprimento?: number | null;
+  peso?: number | null;
+  quantidade: number;
+  valor_Unitario: number;
   categoriasSelecionadas: number[];
 };
 
 const initialState: FormState = {
-  Nome: "",
-  Digital: false,
-  Quantidade: 0,
-  Valor_Unitario: 0,
+  nome: "",
+  digital: false,
+  quantidade: 0,
+  valor_Unitario: 0,
   categoriasSelecionadas: []
 };
 
@@ -42,20 +42,25 @@ export default function ProdutoForm(props: Props) {
     (async () => {
       setCategorias(await getCategorias());
       if (isEdit && id != null) {
-        const existing = await getProdutoById(id);
-        if (existing) {
-          const cats = await getCategoriasByProdutoId(existing.Id);
-          setForm({
-            Nome: existing.Nome,
-            Digital: existing.Digital,
-            Altura: existing.Altura ?? null,
-            Largura: existing.Largura ?? null,
-            Comprimento: existing.Comprimento ?? null,
-            Peso: existing.Peso ?? null,
-            Quantidade: existing.Quantidade,
-            Valor_Unitario: existing.Valor_Unitario,
-            categoriasSelecionadas: cats.map((c) => c.Id)
-          });
+        try {
+          const existing = await getProdutoById(id);
+          if (existing) {
+            setForm({
+              nome: existing.nome,
+              digital: existing.digital,
+              altura: existing.altura ?? null,
+              largura: existing.largura ?? null,
+              comprimento: existing.comprimento ?? null,
+              peso: existing.peso ?? null,
+              quantidade: existing.quantidade,
+              valor_Unitario: existing.valor_Unitario,
+              categoriasSelecionadas: existing.categorias?.map((c) => c.id) || []
+            });
+          } else {
+            console.error("Produto não encontrado para edição. ID:", id);
+          }
+        } catch (error) {
+          console.error("Erro ao buscar produto:", error);
         }
       }
     })();
@@ -68,11 +73,11 @@ export default function ProdutoForm(props: Props) {
   async function onSubmit(e?: React.FormEvent) {
     e?.preventDefault();
 
-    if (!form.Nome.trim()) {
+    if (!form.nome.trim()) {
       alert("Nome é obrigatório");
       return;
     }
-    if (form.Valor_Unitario < 0 || form.Quantidade < 0) {
+    if (form.valor_Unitario < 0 || form.quantidade < 0) {
       alert("Valores não podem ser negativos");
       return;
     }
@@ -80,32 +85,32 @@ export default function ProdutoForm(props: Props) {
     const now = new Date().toISOString();
 
     if (!isEdit) {
-      const payload: Omit<Produto, "Id"> = {
-        Nome: form.Nome.trim(),
-        Digital: form.Digital,
-        Altura: form.Altura ?? null,
-        Largura: form.Largura ?? null,
-        Peso: form.Peso ?? null,
-        Quantidade: form.Quantidade,
-        Valor_Unitario: form.Valor_Unitario,
-        Comprimento: form.Comprimento ?? null,
-        Data_Criacao: now,
-        Data_Modificacao: null,
-        Usuario_Criou_Id: user?.Id ?? null,
-        Usuario_Modificou_Id: null
+      const payload: Omit<Produto, "id"> = {
+        nome: form.nome.trim(),
+        digital: form.digital,
+        altura: form.altura ?? null,
+        largura: form.largura ?? null,
+        peso: form.peso ?? null,
+        quantidade: form.quantidade,
+        valor_Unitario: form.valor_Unitario,
+        comprimento: form.comprimento ?? null,
+        data_criacao: now,
+        data_modificacao: null,
+        usuario_Criou_Id: user ?? null,
+        usuario_Modificou_id: null
       };
       await createProduto(payload, form.categoriasSelecionadas);
     } else if (id != null) {
-      const payload: Partial<Omit<Produto, "Id">> = {
-        Nome: form.Nome.trim(),
-        Digital: form.Digital,
-        Altura: form.Altura ?? null,
-        Largura: form.Largura ?? null,
-        Peso: form.Peso ?? null,
-        Quantidade: form.Quantidade,
-        Valor_Unitario: form.Valor_Unitario,
-        Comprimento: form.Comprimento ?? null,
-        Usuario_Modificou_Id: user?.Id ?? null
+      const payload: Partial<Omit<Produto, "id">> = {
+        nome: form.nome.trim(),
+        digital: form.digital,
+        altura: form.altura ?? null,
+        largura: form.largura ?? null,
+        peso: form.peso ?? null,
+        quantidade: form.quantidade,
+        valor_Unitario: form.valor_Unitario,
+        comprimento: form.comprimento ?? null,
+        usuario_Modificou_id: user ?? null
       };
       await updateProduto(id, payload, form.categoriasSelecionadas);
     }
@@ -130,7 +135,7 @@ export default function ProdutoForm(props: Props) {
       <form className="card p-4 grid grid-cols-1 md:grid-cols-2 gap-4" onSubmit={onSubmit}>
         <div className="md:col-span-2">
           <label className="label" htmlFor="nome">Nome</label>
-          <input id="nome" className="input" value={form.Nome} onChange={(e) => updateField("Nome", e.target.value)} />
+          <input id="nome" className="input" value={form.nome} onChange={(e) => updateField("nome", e.target.value)} />
         </div>
 
         <div>
@@ -140,8 +145,8 @@ export default function ProdutoForm(props: Props) {
               <input
                 type="radio"
                 name="tipo"
-                checked={!form.Digital}
-                onChange={() => updateField("Digital", false)}
+                checked={!form.digital}
+                onChange={() => updateField("digital", false)}
               />
               <span>Físico</span>
             </label>
@@ -149,8 +154,8 @@ export default function ProdutoForm(props: Props) {
               <input
                 type="radio"
                 name="tipo"
-                checked={form.Digital}
-                onChange={() => updateField("Digital", true)}
+                checked={form.digital}
+                onChange={() => updateField("digital", true)}
               />
               <span>Digital</span>
             </label>
@@ -163,8 +168,8 @@ export default function ProdutoForm(props: Props) {
             id="quant"
             type="number"
             className="input"
-            value={form.Quantidade}
-            onChange={(e) => updateField("Quantidade", Number(e.target.value))}
+            value={form.quantidade}
+            onChange={(e) => updateField("quantidade", Number(e.target.value))}
           />
         </div>
 
@@ -175,28 +180,28 @@ export default function ProdutoForm(props: Props) {
             type="number"
             step="0.01"
             className="input"
-            value={form.Valor_Unitario}
-            onChange={(e) => updateField("Valor_Unitario", Number(e.target.value))}
+            value={form.valor_Unitario}
+            onChange={(e) => updateField("valor_Unitario", Number(e.target.value))}
           />
         </div>
 
-        {!form.Digital && (
+        {!form.digital && (
           <>
             <div>
               <label className="label" htmlFor="comp">Comprimento</label>
-              <input id="comp" type="number" step="0.01" className="input" value={form.Comprimento ?? ""} onChange={(e) => updateField("Comprimento", e.target.value ? Number(e.target.value) : null)} />
+              <input id="comp" type="number" step="0.01" className="input" value={form.comprimento ?? ""} onChange={(e) => updateField("comprimento", e.target.value ? Number(e.target.value) : null)} />
             </div>
             <div>
               <label className="label" htmlFor="larg">Largura</label>
-              <input id="larg" type="number" step="0.01" className="input" value={form.Largura ?? ""} onChange={(e) => updateField("Largura", e.target.value ? Number(e.target.value) : null)} />
+              <input id="larg" type="number" step="0.01" className="input" value={form.largura ?? ""} onChange={(e) => updateField("largura", e.target.value ? Number(e.target.value) : null)} />
             </div>
             <div>
               <label className="label" htmlFor="alt">Altura</label>
-              <input id="alt" type="number" step="0.01" className="input" value={form.Altura ?? ""} onChange={(e) => updateField("Altura", e.target.value ? Number(e.target.value) : null)} />
+              <input id="alt" type="number" step="0.01" className="input" value={form.altura ?? ""} onChange={(e) => updateField("altura", e.target.value ? Number(e.target.value) : null)} />
             </div>
             <div>
               <label className="label" htmlFor="peso">Peso</label>
-              <input id="peso" type="number" step="0.001" className="input" value={form.Peso ?? ""} onChange={(e) => updateField("Peso", e.target.value ? Number(e.target.value) : null)} />
+              <input id="peso" type="number" step="0.001" className="input" value={form.peso ?? ""} onChange={(e) => updateField("peso", e.target.value ? Number(e.target.value) : null)} />
             </div>
           </>
         )}
@@ -205,20 +210,20 @@ export default function ProdutoForm(props: Props) {
           <label className="label">Categorias</label>
           <div className="flex flex-wrap gap-3">
             {categorias.map((c) => {
-              const checked = form.categoriasSelecionadas.includes(c.Id);
+              const checked = form.categoriasSelecionadas.includes(c.id);
               return (
-                <label key={c.Id} className="inline-flex items-center gap-2">
+                <label key={c.id} className="inline-flex items-center gap-2">
                   <input
                     type="checkbox"
                     checked={checked}
                     onChange={(e) => {
                       const next = new Set(form.categoriasSelecionadas);
-                      if (e.target.checked) next.add(c.Id);
-                      else next.delete(c.Id);
+                      if (e.target.checked) next.add(c.id);
+                      else next.delete(c.id);
                       updateField("categoriasSelecionadas", Array.from(next));
                     }}
                   />
-                  <span>{c.Nome}</span>
+                  <span>{c.nome}</span>
                 </label>
               );
             })}

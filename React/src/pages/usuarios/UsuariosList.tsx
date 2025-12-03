@@ -44,15 +44,15 @@ export default function UsuariosList() {
           </thead>
           <tbody>
             {usuarios.map((u) => (
-              <tr key={u.Id} className="border-t border-border">
-                <td className="px-4 py-2">{u.Id}</td>
-                <td className="px-4 py-2">{u.Nome}</td>
+              <tr key={u.id} className="border-t border-border">
+                <td className="px-4 py-2">{u.id}</td>
+                <td className="px-4 py-2">{u.nome}</td>
                 <td className="px-4 py-2">
                   <div className="flex gap-2 justify-end">
-                    <button className="btn btn-outline" onClick={() => setPage({ name: "usuario-edit", id: u.Id })}>
+                    <button className="btn btn-outline" onClick={() => setPage({ name: "usuario-edit", id: u.id })}>
                       <Edit size={16} /> Editar
                     </button>
-                    <button className="btn btn-outline text-red-600" onClick={() => remover(u.Id)}>
+                    <button className="btn btn-outline text-red-600" onClick={() => remover(u.id)}>
                       <Trash2 size={16} /> Excluir
                     </button>
                   </div>

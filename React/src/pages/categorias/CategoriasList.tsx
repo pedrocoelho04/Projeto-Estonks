@@ -25,7 +25,7 @@ export default function CategoriasList() {
 
   const filtered = useMemo(() => {
     if (!search) return categorias;
-    return categorias.filter((c) => c.Nome.toLowerCase().includes(search.toLowerCase()));
+    return categorias.filter((c) => c.nome.toLowerCase().includes(search.toLowerCase()));
   }, [categorias, search]);
 
   return (
@@ -50,14 +50,14 @@ export default function CategoriasList() {
           </thead>
           <tbody>
             {filtered.map((c) => (
-              <tr key={c.Id} className="border-t border-border">
-                <td className="px-4 py-2">{c.Nome}</td>
+              <tr key={c.id} className="border-t border-border">
+                <td className="px-4 py-2">{c.nome}</td>
                 <td className="px-4 py-2">
                   <div className="flex gap-2 justify-end">
-                    <button className="btn btn-outline" onClick={() => setPage({ name: "categoria-edit", id: c.Id })}>
+                    <button className="btn btn-outline" onClick={() => setPage({ name: "categoria-edit", id: c.id })}>
                       <Edit size={16} /> Editar
                     </button>
-                    <button className="btn btn-outline text-red-600" onClick={() => remover(c.Id)}>
+                    <button className="btn btn-outline text-red-600" onClick={() => remover(c.id)}>
                       <Trash2 size={16} /> Excluir
                     </button>
                   </div>

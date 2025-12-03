@@ -1,149 +1,160 @@
-import { KEYS } from "./seed";
-import { getItem, nextId, setItem } from "./storage";
-import type { CatXprod, Categoria, Produto, Usuario, Id } from "../types";
+import type { Categoria, Produto, Usuario, Id } from "../types";
+
+const API_URL = "http://localhost:8080/api";
+
+async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
+  const res = await fetch(`${API_URL}${endpoint}`, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+    ...options,
+  });
+
+  if (!res.ok) {
+    throw new Error(`Erro na requisição: ${res.statusText}`);
+  }
+
+  // Se for 204 No Content, retorna null (ou undefined)
+  if (res.status === 204) return null as T;
+
+  return res.json();
+}
 
 // AUTH
 export async function login(nome: string, senha: string): Promise<Usuario | null> {
-  const usuarios = await getItem<Usuario[]>(KEYS.usuarios, []);
-  const user = usuarios.find((u) => u.Nome === nome && u.Senha === senha);
-  return user ?? null;
+  try {
+    const res = await request<{ token: string; message: string; usuario: Usuario } | Usuario>("/login", {
+      method: "POST",
+      body: JSON.stringify({ user: nome, password: senha }),
+    });
+
+    if ('token' in res && res.usuario) {
+      // Sucesso
+      return res.usuario;
+    }
+    return null;
+
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
 }
 
+// USUÁRIOS
 export async function getUsuarios(): Promise<Usuario[]> {
-  return getItem<Usuario[]>(KEYS.usuarios, []);
+  return request<Usuario[]>("/usuarios");
 }
+
 export async function getUsuarioById(id: Id): Promise<Usuario | undefined> {
-  const all = await getUsuarios();
-  return all.find((u) => u.Id === id);
+  try {
+    return await request<Usuario>(`/usuarios/${id}`);
+  } catch {
+    return undefined;
+  }
 }
-export async function createUsuario(data: Omit<Usuario, "Id">): Promise<Usuario> {
-  const all = await getUsuarios();
-  const Id = (await nextId(KEYS.usuarios)) || (all.length ? Math.max(...all.map((x) => x.Id)) + 1 : 1);
-  const novo: Usuario = { Id, ...data };
-  await setItem(KEYS.usuarios, [...all, novo]);
-  return novo;
+
+export async function createUsuario(data: Omit<Usuario, "id">): Promise<Usuario> {
+  return request<Usuario>("/usuarios", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
 }
-export async function updateUsuario(id: Id, data: Partial<Omit<Usuario, "Id">>): Promise<Usuario | null> {
-  const all = await getUsuarios();
-  const idx = all.findIndex((u) => u.Id === id);
-  if (idx < 0) return null;
-  const updated = { ...all[idx], ...data };
-  all[idx] = updated;
-  await setItem(KEYS.usuarios, all);
-  return updated;
+
+export async function updateUsuario(id: Id, data: Partial<Usuario>): Promise<Usuario | null> {
+  return request<Usuario>(`/usuarios/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
 }
+
 export async function deleteUsuario(id: Id): Promise<boolean> {
-  const all = await getUsuarios();
-  const filtered = all.filter((u) => u.Id !== id);
-  await setItem(KEYS.usuarios, filtered);
-  return filtered.length < all.length;
+  await request<void>(`/usuarios/${id}`, {
+    method: "DELETE",
+  });
+  return true;
 }
 
 // CATEGORIAS
 export async function getCategorias(): Promise<Categoria[]> {
-  return getItem<Categoria[]>(KEYS.categorias, []);
+  return request<Categoria[]>("/categorias");
 }
+
 export async function getCategoriaById(id: Id): Promise<Categoria | undefined> {
-  const all = await getCategorias();
-  return all.find((c) => c.Id === id);
+  try {
+    return await request<Categoria>(`/categorias/${id}`);
+  } catch {
+    return undefined;
+  }
 }
-export async function createCategoria(data: Omit<Categoria, "Id">): Promise<Categoria> {
-  const all = await getCategorias();
-  const Id = (await nextId(KEYS.categorias)) || (all.length ? Math.max(...all.map((x) => x.Id)) + 1 : 1);
-  const novo: Categoria = { Id, ...data };
-  await setItem(KEYS.categorias, [...all, novo]);
-  return novo;
+
+export async function createCategoria(data: Omit<Categoria, "id">): Promise<Categoria> {
+  return request<Categoria>("/categorias", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
 }
-export async function updateCategoria(id: Id, data: Partial<Omit<Categoria, "Id">>): Promise<Categoria | null> {
-  const all = await getCategorias();
-  const idx = all.findIndex((c) => c.Id === id);
-  if (idx < 0) return null;
-  const updated = { ...all[idx], ...data };
-  all[idx] = updated;
-  await setItem(KEYS.categorias, all);
-  return updated;
+
+export async function updateCategoria(id: Id, data: Partial<Categoria>): Promise<Categoria | null> {
+  return request<Categoria>(`/categorias/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
 }
+
 export async function deleteCategoria(id: Id): Promise<boolean> {
-  const all = await getCategorias();
-  const filtered = all.filter((c) => c.Id !== id);
-  await setItem(KEYS.categorias, filtered);
-  // Apagar relacionamentos CatXprod
-  const links = await getItem<CatXprod[]>(KEYS.catxprod, []);
-  await setItem(KEYS.catxprod, links.filter((l) => l.Id_Categoria !== id));
-  return filtered.length < all.length;
+  await request<void>(`/categorias/${id}`, {
+    method: "DELETE",
+  });
+  return true;
 }
 
 // PRODUTOS
 export async function getProdutos(): Promise<Produto[]> {
-  return getItem<Produto[]>(KEYS.produtos, []);
+  return request<Produto[]>("/produtos");
 }
+
 export async function getProdutoById(id: Id): Promise<Produto | undefined> {
-  const all = await getProdutos();
-  return all.find((p) => p.Id === id);
-}
-export async function createProduto(data: Omit<Produto, "Id">, categoriaIds: Id[] = []): Promise<Produto> {
-  const all = await getProdutos();
-  const Id = (await nextId(KEYS.produtos)) || (all.length ? Math.max(...all.map((x) => x.Id)) + 1 : 1);
-  const novo: Produto = { Id, ...data };
-  await setItem(KEYS.produtos, [...all, novo]);
-
-  // Relacionamentos CatXprod
-  const currentLinks = await getItem<CatXprod[]>(KEYS.catxprod, []);
-  let newLinks = [...currentLinks];
-  for (const cid of categoriaIds) {
-    const link: CatXprod = {
-      Id: (await nextId(KEYS.catxprod)) || (newLinks.length ? Math.max(...newLinks.map((x) => x.Id)) + 1 : 1),
-      Id_Produto: Id,
-      Id_Categoria: cid
-    };
-    newLinks.push(link);
+  try {
+    return await request<Produto>(`/produtos/${id}`);
+  } catch {
+    return undefined;
   }
-  await setItem(KEYS.catxprod, newLinks);
-
-  return novo;
 }
-export async function updateProduto(id: Id, data: Partial<Omit<Produto, "Id">>, categoriaIds?: Id[]): Promise<Produto | null> {
-  const all = await getProdutos();
-  const idx = all.findIndex((p) => p.Id === id);
-  if (idx < 0) return null;
-  const updated = { ...all[idx], ...data, Data_Modificacao: new Date().toISOString() };
-  all[idx] = updated;
-  await setItem(KEYS.produtos, all);
+
+export async function createProduto(data: Omit<Produto, "id">, categoriaIds: Id[] = []): Promise<Produto> {
+  const produtoToSend = {
+    ...data,
+    categorias: categoriaIds.map(id => ({ id }))
+  };
+
+  return request<Produto>("/produtos", {
+    method: "POST",
+    body: JSON.stringify(produtoToSend),
+  });
+}
+
+export async function updateProduto(id: Id, data: Partial<Produto>, categoriaIds?: Id[]): Promise<Produto | null> {
+  const produtoToSend: any = { ...data };
 
   if (categoriaIds) {
-    // Atualizar CatXprod
-    const links = await getItem<CatXprod[]>(KEYS.catxprod, []);
-    const filtered = links.filter((l) => l.Id_Produto !== id);
-    let newLinks = [...filtered];
-    for (const cid of categoriaIds) {
-      const link: CatXprod = {
-        Id: (await nextId(KEYS.catxprod)) || (newLinks.length ? Math.max(...newLinks.map((x) => x.Id)) + 1 : 1),
-        Id_Produto: id,
-        Id_Categoria: cid
-      };
-      newLinks.push(link);
-    }
-    await setItem(KEYS.catxprod, newLinks);
+    produtoToSend.categorias = categoriaIds.map(id => ({ id }));
   }
 
-  return updated;
+  return request<Produto>(`/produtos/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(produtoToSend),
+  });
 }
+
 export async function deleteProduto(id: Id): Promise<boolean> {
-  const all = await getProdutos();
-  const filtered = all.filter((p) => p.Id !== id);
-  await setItem(KEYS.produtos, filtered);
-
-  // ON DELETE CASCADE em CatXprod
-  const links = await getItem<CatXprod[]>(KEYS.catxprod, []);
-  await setItem(KEYS.catxprod, links.filter((l) => l.Id_Produto !== id));
-
-  return filtered.length < all.length;
+  await request<void>(`/produtos/${id}`, {
+    method: "DELETE",
+  });
+  return true;
 }
 
-// CATXPROD helpers
+// Helpers
 export async function getCategoriasByProdutoId(produtoId: Id): Promise<Categoria[]> {
-  const links = await getItem<CatXprod[]>(KEYS.catxprod, []);
-  const catIds = links.filter((l) => l.Id_Produto === produtoId).map((l) => l.Id_Categoria);
-  const categorias = await getCategorias();
-  return categorias.filter((c) => catIds.includes(c.Id));
+  const produto = await getProdutoById(produtoId);
+  return produto?.categorias || [];
 }

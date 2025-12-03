@@ -8,17 +8,17 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "produto")
-public class Produto{
+public class Produto {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Integer id;
+  private Long id;
 
   @Column(name = "nome", length = 255, nullable = false)
   private String nome;
 
   @Column(name = "digital", nullable = true)
   private Boolean digital;
-  
+
   @Column(name = "altura", nullable = true)
   private Double altura;
 
@@ -51,15 +51,11 @@ public class Produto{
   @JoinColumn(name = "usuario_modificou_id", nullable = true)
   private Usuario usuario_Modificou_id;
 
-  @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
-  @JoinTable(
-    name = "catxprod",
-    joinColumns = @JoinColumn(name = "id_produto"),
-    inverseJoinColumns = @JoinColumn(name = "id_categoria")
-  )
+  @ManyToMany(fetch = FetchType.EAGER)
+  @JoinTable(name = "catxprod", joinColumns = @JoinColumn(name = "id_produto"), inverseJoinColumns = @JoinColumn(name = "id_categoria"))
   private Set<Categoria> categorias = new HashSet<>();
 
-  public Produto(Integer id, String nome, Boolean digital, Double altura, Double largura, Double peso,
+  public Produto(Long id, String nome, Boolean digital, Double altura, Double largura, Double peso,
       Integer quantidade, Double valor_Unitario, Double comprimento, LocalDateTime data_criacao,
       LocalDateTime data_modificacao, Usuario usuario_Criou_Id, Usuario usuario_Modificou_id,
       Set<Categoria> categorias) {
@@ -82,11 +78,11 @@ public class Produto{
   public Produto() {
   }
 
-  public Integer getId() {
+  public Long getId() {
     return id;
   }
 
-  public void setId(Integer id) {
+  public void setId(Long id) {
     this.id = id;
   }
 

@@ -18,7 +18,7 @@ export default function UsuarioForm(props: Props) {
     (async () => {
       if (isEdit && id != null) {
         const u = await getUsuarioById(id);
-        if (u) setNome(u.Nome);
+        if (u) setNome(u.nome);
       }
     })();
   }, [isEdit, id]);
@@ -29,8 +29,8 @@ export default function UsuarioForm(props: Props) {
       alert("Preencha os campos obrigatórios");
       return;
     }
-    if (!isEdit) await createUsuario({ Nome: nome.trim(), Senha: senha.trim() });
-    else if (id != null) await updateUsuario(id, { Nome: nome.trim(), ...(senha ? { Senha: senha.trim() } : {}) });
+    if (!isEdit) await createUsuario({ nome: nome.trim(), senha: senha.trim() });
+    else if (id != null) await updateUsuario(id, { nome: nome.trim(), ...(senha ? { senha: senha.trim() } : {}) });
     setPage({ name: "usuarios" });
   }
 

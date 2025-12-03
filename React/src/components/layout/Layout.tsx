@@ -56,7 +56,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </nav>
         <div className="mt-auto p-4 border-t border-border">
           <div className="text-sm mb-2">
-            Logado como: <span className="font-medium">{user?.Nome}</span>
+            Logado como: <span className="font-medium">{user?.nome}</span>
           </div>
           <button className="btn btn-outline w-full" onClick={logout}>
             <LogOut size={16} /> Sair

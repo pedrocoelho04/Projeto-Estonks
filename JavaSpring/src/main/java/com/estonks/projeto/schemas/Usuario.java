@@ -10,7 +10,7 @@ import javax.persistence.*;
 public class Usuario {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Integer id;
+  private Long id;
 
   @Column(name = "nome", length = 255, nullable = false)
   private String nome;
@@ -24,13 +24,15 @@ public class Usuario {
   @Column(name = "token", length = 36, nullable = true)
   private String token;
 
+  @com.fasterxml.jackson.annotation.JsonIgnore
   @OneToMany(mappedBy = "usuario_Criou_Id", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
   private List<Produto> produtosCriados = new ArrayList<>();
 
+  @com.fasterxml.jackson.annotation.JsonIgnore
   @OneToMany(mappedBy = "usuario_Modificou_id", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
   private List<Produto> produtosAlterados = new ArrayList<>();
 
-  public Usuario(Integer id, String nome, String senha, String permissao, String token) {
+  public Usuario(Long id, String nome, String senha, String permissao, String token) {
     this.id = id;
     this.nome = nome;
     this.senha = senha;
@@ -38,7 +40,8 @@ public class Usuario {
     this.token = token;
   }
 
-  public Usuario(Integer id, String nome, String senha, String permissao, List<Produto> produtosCriados, List<Produto> produtosAlterados, String token) {
+  public Usuario(Long id, String nome, String senha, String permissao, List<Produto> produtosCriados,
+      List<Produto> produtosAlterados, String token) {
     this.id = id;
     this.nome = nome;
     this.senha = senha;
@@ -51,11 +54,11 @@ public class Usuario {
   public Usuario() {
   }
 
-  public Integer getId() {
+  public Long getId() {
     return id;
   }
 
-  public void setId(Integer id) {
+  public void setId(Long id) {
     this.id = id;
   }
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { deleteProduto, getCategoriasByProdutoId, getProdutos } from "../../services/api";
+import { deleteProduto, getProdutos } from "../../services/api";
 import type { Produto } from "../../types";
 import { Edit, Plus, Trash2 } from 'lucide-react';
 import { usePage } from "../../store/page";
@@ -21,7 +21,7 @@ export default function ProdutosList() {
 
   const filtered = useMemo(() => {
     if (!search) return produtos;
-    return produtos.filter((p) => p.Nome.toLowerCase().includes(search.toLowerCase()));
+    return produtos.filter((p) => p.nome.toLowerCase().includes(search.toLowerCase()));
   }, [produtos, search]);
 
   return (
@@ -58,7 +58,7 @@ export default function ProdutosList() {
           </thead>
           <tbody>
             {filtered.map((p) => (
-              <Row key={p.Id} p={p} onDelete={() => remover(p.Id)} onEdit={() => setPage({ name: "produto-edit", id: p.Id })} />
+              <Row key={p.id} p={p} onDelete={() => remover(p.id)} onEdit={() => setPage({ name: "produto-edit", id: p.id })} />
             ))}
             {filtered.length === 0 && (
               <tr>
@@ -79,29 +79,20 @@ function formatMoney(n: number) {
 }
 
 function Row({ p, onDelete, onEdit }: { p: Produto; onDelete: () => void; onEdit: () => void }) {
-  const [catNames, setCatNames] = useState<string>("");
-
-  useEffect(() => {
-    (async () => {
-      const cats = await getCategoriasByProdutoId(p.Id);
-      setCatNames(cats.map((c) => c.Nome).join(", "));
-    })();
-  }, [p.Id]);
-
   return (
     <tr className="border-t border-border">
-      <td className="px-4 py-2">{p.Nome}</td>
+      <td className="px-4 py-2">{p.nome}</td>
       <td className="px-4 py-2">
-        <span className="badge">{p.Digital ? "Digital" : "Físico"}</span>
+        <span className="badge">{p.digital ? "Digital" : "Físico"}</span>
       </td>
-      <td className="px-4 py-2">{p.Quantidade}</td>
-      <td className="px-4 py-2">{formatMoney(p.Valor_Unitario)}</td>
+      <td className="px-4 py-2">{p.quantidade}</td>
+      <td className="px-4 py-2">{formatMoney(p.valor_Unitario)}</td>
       <td className="px-4 py-2">
-        {(p.Comprimento ?? 0)}/{(p.Largura ?? 0)}/{(p.Altura ?? 0)}
+        {(p.comprimento ?? 0)}/{(p.largura ?? 0)}/{(p.altura ?? 0)}
       </td>
-      <td className="px-4 py-2">{p.Peso ?? "-"}</td>
-      <td className="px-4 py-2">{catNames || "-"}</td>
-      <td className="px-4 py-2">{new Date(p.Data_Criacao).toLocaleDateString("pt-BR")}</td>
+      <td className="px-4 py-2">{p.peso ?? "-"}</td>
+      <td className="px-4 py-2">{p.categorias?.map(c => c.nome).join(", ") || "-"}</td>
+      <td className="px-4 py-2">{p.data_criacao ? new Date(p.data_criacao).toLocaleDateString("pt-BR") : "-"}</td>
       <td className="px-4 py-2">
         <div className="flex gap-2">
           <button className="btn btn-outline" onClick={onEdit}>

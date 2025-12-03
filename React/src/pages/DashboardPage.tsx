@@ -16,7 +16,7 @@ export default function DashboardPage() {
     })();
   }, []);
 
-  const totalItens = produtos.reduce((acc, p) => acc + (p.Quantidade ?? 0), 0);
+  const totalItens = produtos.reduce((acc, p) => acc + (p.quantidade ?? 0), 0);
   const totalSku = produtos.length;
 
   return (
